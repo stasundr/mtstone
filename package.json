@@ -1,0 +1,19 @@
+{
+  "name": "mtstone",
+  "version": "1.0.0",
+  "description": "",
+  "main": "mtstone",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Stanislav Dryomov",
+  "license": "ISC",
+  "dependencies": {
+    "connect-redis": "3.0.2",
+    "express": "4.13.4",
+    "express-session": "1.13.0",
+    "hiredis": "0.4.1",
+    "jade": "1.11.0",
+    "multer": "1.1.0",
+  }
+}
