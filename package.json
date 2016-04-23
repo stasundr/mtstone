@@ -1,6 +1,6 @@
 {
   "name": "mtstone",
-  "version": "1.0.0",
+  "version": "0.0.1",
   "description": "",
   "main": "mtstone",
   "scripts": {
@@ -12,8 +12,7 @@
     "connect-redis": "3.0.2",
     "express": "4.13.4",
     "express-session": "1.13.0",
-    "hiredis": "0.4.1",
     "jade": "1.11.0",
-    "multer": "1.1.0",
+    "multer": "1.1.0"
   }
 }
