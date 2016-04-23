@@ -27,4 +27,4 @@ data[0] = 'SNP; heteroplasmy';
 
 fs.writeFileSync(`${path}.csv`, data.join('\n'), 'utf-8');
 
-spawn('rscript', ['heteroplasmy.R', `${path}.csv`, `${path}.png`]);
+spawn('rscript', [`${__dirname}/heteroplasmy.R`, `${path}.csv`, `${path.replace(/\.sam$/, '')}.png`]);

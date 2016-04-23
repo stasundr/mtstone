@@ -16,14 +16,18 @@ html
             column(cols='1')
             column(cols='10')
                 h1(class='title') heteroplasmy.js
+                p.
+                    Данный сервис позволяет определить уровень гетероплазмии для каждой нуклеотидной позиции мтДНК по результатам NGS.<br/>
+                    Для FASTQ-файлов выравнивание коротких прочтений производится при помощи BWA относительно последовательности RSRS.<br/>
+                    Обработка файлов может занимать достаточно продолжительное время.
         row
             column(cols='1')
             column(cols='3')
-                h3 Upload your *.sam files
+                h4 Загрузите подходящие SAM или FASTQ файлы:
                 form(action='/upload', class='dropzone', id='my-awesome-dropzone')
             column(cols='2')
-                h3 Your files
+                h4 Ваши файлы:
                 #list
             column(cols='5')
-                h3 Preview
+                h4 Результат:
                 img#preview(src='')

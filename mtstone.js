@@ -27,7 +27,8 @@ const config = {
         cookie: { secure: false }
     },
 
-    taskSpooler: 'ts'
+    taskSpooler: 'ts',
+    bwa: 'bwa'
 };
 const uploadFolder = path.join(__dirname, 'uploads/');
 const publicFolder = path.join(__dirname, 'public');
@@ -58,14 +59,34 @@ app.post('/upload', upload.any(), (req, res) => {
     if (data == undefined) data = emptyClientData;
 
     req.files.forEach(file => {
-        data.originalNames.push(file.originalname);
-        data.publicNames.push(file.filename);
-        data.fileStatus.push(false);
+        let extension = file.originalname.toLowerCase().match(/\.(sam|fastq)$/);
 
-        spawn(
-            config.taskSpooler,
-            ['-n', 'node', path.join(__dirname, 'heteroplasmy.js'), file.path]
-        );
+        if (extension) {
+            data.originalNames.push(file.originalname);
+            data.publicNames.push(file.filename);
+            data.fileStatus.push(false);
+
+            const rsrsPath = path.join(__dirname, 'library', 'bwa', 'RSRS.fa');
+            const heteroplasmyPath = path.join(__dirname, 'library', 'heteroplasmy.js');
+
+            switch (extension[1]) {
+                case 'sam':
+                    spawn(config.taskSpooler, ['-n', 'node', heteroplasmyPath, file.path]);
+                    break;
+
+                case 'fastq':
+                    const template = `${config.bwa} aln ${rsrsPath} ${file.path} > ${file.path}.sai; ` +
+                                     `${config.bwa} samse ${rsrsPath} ${file.path}.sai ${file.path} > ${file.path}.sam`;
+
+                    fs.writeFile(`${file.path}.sh`, template, 'utf-8', () => {
+                        spawn(config.taskSpooler, ['-n', 'sh', `${file.path}.sh`]);
+                        spawn(config.taskSpooler, ['-n', '-d', 'node', heteroplasmyPath, `${file.path}.sam`]);
+                    });
+                    break;
+            }
+        } else {
+            // delete files
+        }
     });
 
     res.json({ upload: true });
