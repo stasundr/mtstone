@@ -67,7 +67,7 @@ app.post('/upload', upload.any(), (req, res) => {
             data.fileStatus.push(false);
 
             const rsrsPath = path.join(__dirname, 'library', 'bwa', 'RSRS.fa');
-            const heteroplasmyPath = path.join(__dirname, 'library', 'heteroplasmy.js');
+            const heteroplasmyPath = path.join(__dirname, 'library', 'heteroplasmy_stream.js');
 
             switch (extension[1]) {
                 case 'sam':
