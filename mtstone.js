@@ -75,7 +75,8 @@ app.post('/upload', upload.any(), (req, res) => {
                     break;
 
                 case 'fastq':
-                    const template = `${config.bwa} aln ${rsrsPath} ${file.path} > ${file.path}.sai; ` +
+                    const template = '#!/usr/bin/env bash\n' +
+                                     `${config.bwa} aln ${rsrsPath} ${file.path} > ${file.path}.sai; ` +
                                      `${config.bwa} samse ${rsrsPath} ${file.path}.sai ${file.path} > ${file.path}.sam`;
 
                     fs.writeFile(`${file.path}.sh`, template, 'utf-8', () => {
@@ -85,7 +86,9 @@ app.post('/upload', upload.any(), (req, res) => {
                     break;
             }
         } else {
-            // delete files
+            fs.access(file.path, fs.W_OK, err => {
+                if (!err) fs.unlink(file.path);
+            });
         }
     });
 
