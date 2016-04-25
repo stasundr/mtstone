@@ -1,0 +1,18 @@
+table
+    tbody
+        - for (var i = 0; i < originalNames.length; i++)
+            - var fn = "$('#preview').attr('src', '" + host + publicNames[i] + ".png')"
+            - var csv = host + publicNames[i] + ".csv"
+            tr
+                if fileStatus[i]
+                    td
+                        a(href="#", onclick=fn) #{originalNames[i]}
+                        i(class="fa fa-check")
+                    td
+                        a(href=csv)
+                            i(class="fa fa-file-text-o")
+                        a(href=csv)
+                            i(class="fa fa-file-pdf-o")
+                else
+                    td #{originalNames[i]}
+                        i(class="fa fa-hourglass")

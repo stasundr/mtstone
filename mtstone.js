@@ -9,9 +9,11 @@ let session = require('express-session');
 let  multer = require('multer');
 let   Redis = require('connect-redis')(session);
 let   spawn = require('child_process').spawn;
+let     pug = require('pug');
 
 // Config
 const config = {
+    host: 'http://localhost',
     port: 3000,
 
     redisOptions: {
@@ -32,10 +34,12 @@ const config = {
 };
 const uploadFolder = path.join(__dirname, 'uploads/');
 const publicFolder = path.join(__dirname, 'public');
+const viewsFolder = path.join(__dirname, 'views');
 const emptyClientData = {
     originalNames: [],
     publicNames: [],
-    fileStatus: []
+    fileStatus: [],
+    host: config.host + ':' + config.port + '/'
 };
 
 // Express App
@@ -44,8 +48,8 @@ let upload = multer({ dest: uploadFolder });
 app.locals.basedir = publicFolder;
 
 app
-    .set('views', path.join(__dirname, 'views'))
-    .set('view engine', 'jade')
+    .set('views', viewsFolder)
+    .set('view engine', 'pug')
     .use(express.static(publicFolder))
     .use(express.static(uploadFolder))
     .use(session(config.sessionOptions))
@@ -80,11 +84,9 @@ app.post('/upload', upload.any(), (req, res) => {
                         `${config.bwa} samse ${rsrsPath} ${file.path}.sai ${file.path} > ${file.path}.sam\n` +
                         `node ${heteroplasmyPath} ${file.path}.sam`;
 
-                    fs.writeFile(
-                        `${file.path}.sh`,
-                        template, 'utf-8',
-                        () => spawn(config.taskSpooler, ['-n', 'sh', `${file.path}.sh`])
-                    );
+                    fs.writeFile(`${file.path}.sh`, template, 'utf-8', () => {
+                        spawn(config.taskSpooler, ['-n', 'sh', `${file.path}.sh`])
+                    });
                     break;
             }
         } else {
@@ -101,11 +103,13 @@ app.post('/refresh', (req, res) => {
     let data = req.session['clientData'];
     if (data == undefined) data = emptyClientData;
 
-    data.publicNames.forEach((file, i) =>
-        fs.access(path.join(uploadFolder, `${file}.png`), fs.R_OK | fs.W_OK, err => {
+    for (let i = 0; i < data.originalNames.length; i++) {
+        fs.access(path.join(uploadFolder, `${data.publicNames[i]}.png`), fs.R_OK, err => {
             if (!err) data.fileStatus[i] = true
-        })
-    );
+        });
+    }
+    
+    let list = pug.compileFile(path.join(__dirname, 'library', 'generate_list.pug'))(data);
 
-    res.json(data);
+    res.json({ list });
 });
