@@ -76,13 +76,15 @@ app.post('/upload', upload.any(), (req, res) => {
 
                 case 'fastq':
                     const template = '#!/usr/bin/env bash\n' +
-                                     `${config.bwa} aln ${rsrsPath} ${file.path} > ${file.path}.sai; ` +
-                                     `${config.bwa} samse ${rsrsPath} ${file.path}.sai ${file.path} > ${file.path}.sam`;
+                        `${config.bwa} aln ${rsrsPath} ${file.path} > ${file.path}.sai\n` +
+                        `${config.bwa} samse ${rsrsPath} ${file.path}.sai ${file.path} > ${file.path}.sam\n` +
+                        `node ${heteroplasmyPath} ${file.path}.sam`;
 
-                    fs.writeFile(`${file.path}.sh`, template, 'utf-8', () => {
-                        spawn(config.taskSpooler, ['-n', 'sh', `${file.path}.sh`]);
-                        spawn(config.taskSpooler, ['-n', '-d', 'node', heteroplasmyPath, `${file.path}.sam`]);
-                    });
+                    fs.writeFile(
+                        `${file.path}.sh`,
+                        template, 'utf-8',
+                        () => spawn(config.taskSpooler, ['-n', 'sh', `${file.path}.sh`])
+                    );
                     break;
             }
         } else {
