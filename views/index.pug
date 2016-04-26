@@ -26,7 +26,10 @@ html
                 h4 Загрузите подходящие SAM или FASTQ файлы:
                 form(action='/upload', class='dropzone', id='my-awesome-dropzone')
             column(cols='2')
-                h4 Ваши файлы:
+                h4 Ваши файлы
+                    span(style="color:white") #
+                    a(href="/clear")
+                        i(class="fa fa-trash")
                 #list
             column(cols='5')
                 h4 Результат:

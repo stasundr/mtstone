@@ -35,12 +35,6 @@ const config = {
 const uploadFolder = path.join(__dirname, 'uploads/');
 const publicFolder = path.join(__dirname, 'public');
 const viewsFolder = path.join(__dirname, 'views');
-const emptyClientData = {
-    originalNames: [],
-    publicNames: [],
-    fileStatus: [],
-    host: config.host + ':' + config.port + '/'
-};
 
 // Express App
 let app = express();
@@ -58,17 +52,28 @@ app
 // Routes
 app.get('/', (req, res) => res.render('index'));
 
-app.post('/upload', upload.any(), (req, res) => {
-    let data = req.session['clientData'];
-    if (data == undefined) data = emptyClientData;
+app.get('/clear', (req, res) => {
+    req.session.destroy(() => {});
+    res.render('index');
+});
 
+app.post('/upload', upload.any(), (req, res) => {
+    if (req.session['clientData'] == undefined) {
+        req.session['clientData'] = {
+            originalNames: [],
+            publicNames: [],
+            fileStatus: [],
+            host: config.host + ':' + config.port + '/'
+        };
+    }
+    
     req.files.forEach(file => {
         let extension = file.originalname.toLowerCase().match(/\.(sam|fastq)$/);
 
         if (extension) {
-            data.originalNames.push(file.originalname);
-            data.publicNames.push(file.filename);
-            data.fileStatus.push(false);
+            req.session['clientData'].originalNames.push(file.originalname);
+            req.session['clientData'].publicNames.push(file.filename);
+            req.session['clientData'].fileStatus.push(false);
 
             const rsrsPath = path.join(__dirname, 'library', 'bwa', 'RSRS.fa');
             const heteroplasmyPath = path.join(__dirname, 'library', 'heteroplasmy_stream.js');
@@ -100,16 +105,20 @@ app.post('/upload', upload.any(), (req, res) => {
 });
 
 app.post('/refresh', (req, res) => {
-    let data = req.session['clientData'];
-    if (data == undefined) data = emptyClientData;
+    if (req.session['clientData'] == undefined) req.session['clientData'] = {
+        originalNames: [],
+        publicNames: [],
+        fileStatus: [],
+        host: config.host + ':' + config.port + '/'
+    };
 
-    for (let i = 0; i < data.originalNames.length; i++) {
-        fs.access(path.join(uploadFolder, `${data.publicNames[i]}.png`), fs.R_OK, err => {
-            if (!err) data.fileStatus[i] = true
+    for (let i = 0; i < req.session['clientData'].originalNames.length; i++) {
+        fs.access(path.join(uploadFolder, `${req.session['clientData'].publicNames[i]}.png`), fs.R_OK, err => {
+            if (!err) req.session['clientData'].fileStatus[i] = true;
+
+            let list = pug.compileFile(path.join(__dirname, 'library', 'generate_list.pug'))(req.session['clientData']);
+
+            if (i == req.session['clientData'].originalNames.length - 1) res.json({ list });
         });
     }
-    
-    let list = pug.compileFile(path.join(__dirname, 'library', 'generate_list.pug'))(data);
-
-    res.json({ list });
 });
