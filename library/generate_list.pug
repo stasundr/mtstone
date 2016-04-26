@@ -3,15 +3,19 @@ table
         - for (var i = 0; i < originalNames.length; i++)
             - var fn = "$('#preview').attr('src', '" + host + publicNames[i] + ".png')"
             - var csv = host + publicNames[i] + ".csv"
+            - var pdf = host + publicNames[i] + ".pdf"
+            - var csvfilename = originalNames[i] + ".csv"
+            - var pdffilename = originalNames[i] + ".pdf"
             tr
                 if fileStatus[i]
                     td
                         a(href="#", onclick=fn) #{originalNames[i]}
                         i(class="fa fa-check")
                     td
-                        a(href=csv)
+                        a(href=csv, download=csvfilename)
                             i(class="fa fa-file-text-o")
-                        a(href=csv)
+                        span(style="color:white") #
+                        a(href=pdf, download=pdffilename)
                             i(class="fa fa-file-pdf-o")
                 else
                     td #{originalNames[i]}

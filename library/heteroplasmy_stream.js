@@ -33,8 +33,15 @@ stream.on('end', () => {
         heteroplasmy
             .map((p, i) => (p.A + p.C + p.G + p.T) ? `${i}; ${Math.max(p.A, p.C, p.G, p.T)/(p.A + p.C + p.G + p.T)}` : '')
             .filter(s => s !== '')
+            //.map(s => s.replace(/\./g, ','))
             .join('\n'),
         'utf8');
 
-    spawn('rscript', [`${__dirname}/heteroplasmy.R`, `${path}.csv`, `${path.replace(/\.sam$/, '')}.png`]);
+    spawn('rscript',
+        [
+            `${__dirname}/heteroplasmy.R`,
+            `${path}.csv`,
+            `${path.replace(/\.sam$/, '')}.png`,
+            `${path.replace(/\.sam$/, '')}.pdf`
+        ]);
 });

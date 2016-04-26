@@ -12,7 +12,6 @@
     "connect-redis": "3.0.2",
     "express": "4.13.4",
     "express-session": "1.13.0",
-    "jade": "1.11.0",
     "multer": "1.1.0",
     "pug": "2.0.0-alpha6",
     "split": "1.0.0"
