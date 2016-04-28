@@ -50,4 +50,5 @@ apt-get install -y wget unzip git nano task-spooler r-base
     cd /var/www; \
     git clone https://github.com/stasundr/mtstone.git; \
     cd mtstone; \
-    npm install
+    npm install; \
+    chmod 777 /var/www/mtstone/uploads

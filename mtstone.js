@@ -10,28 +10,10 @@ let  multer = require('multer');
 let   Redis = require('connect-redis')(session);
 let   spawn = require('child_process').spawn;
 let     pug = require('pug');
+let    init = require(path.join(__dirname, 'config.js'));
 
 // Config
-const config = {
-    host: 'http://localhost',
-    port: 3000,
-
-    redisOptions: {
-        port: 6379,
-        host: 'localhost'
-    },
-
-    sessionOptions: {
-        store: new Redis(this.redisOptions),
-        secret: 'rETY7inyJo76wp80GSv5yj12K6dh65wLG30vy',
-        resave: false,
-        saveUninitialized: true,
-        cookie: { secure: false }
-    },
-
-    taskSpooler: 'ts',
-    bwa: 'bwa'
-};
+const config = init(Redis);
 const uploadFolder = path.join(__dirname, 'uploads/');
 const publicFolder = path.join(__dirname, 'public');
 const viewsFolder = path.join(__dirname, 'views');
@@ -54,7 +36,7 @@ app.get('/', (req, res) => res.render('index'));
 
 app.get('/clear', (req, res) => {
     req.session.destroy(() => {});
-    res.render('index');
+    res.redirect('/');
 });
 
 app.post('/upload', upload.any(), (req, res) => {
