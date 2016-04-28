@@ -4,13 +4,13 @@
 # Для установки нужно просто запустить этот скрипт (он сам склонирует репозиторий с гитхаба)
 # Для запуска нужно проверить конфиг (mtstone.js -> config) и запустить forever mtstone.js
 
-# TODO
 # 1) Run redis-server as a daemon
 # 2) Make initial configuration (rscript -> Rscript; ts -> tsp; host -> ask for host adds)
 
-SOFTWARE='/lhmg/software'
+SOFTWARE='/usr/bin'
 mkdir -p ${SOFTWARE}
 
+apt-get update
 apt-get install -y wget unzip git nano task-spooler r-base
 
 # BWA
@@ -21,7 +21,7 @@ apt-get install -y wget unzip git nano task-spooler r-base
     ln -s ${SOFTWARE}/bwa/bwa  /usr/local/bin
 
 # Node.js
-    NODE_VERSION='v5.11.0'
+    NODE_VERSION='v6.0.0'
     cd ${SOFTWARE}; \
     wget https://nodejs.org/dist/${NODE_VERSION}/node-${NODE_VERSION}-linux-x64.tar.xz; \
     apt-get install xz-utils; \
@@ -41,11 +41,13 @@ apt-get install -y wget unzip git nano task-spooler r-base
     make hiredis lua jemalloc linenoise; \
     cd ..; \
     make; \
-    make install
+    make install; \
+    sed -i.bak 's/daemonize no/daemonize yes/g' redis.conf; \
+    redis-server redis.conf
 
 # mtStone
-    npm install forever -g
-    cd ${SOFTWARE}; \
+    mkdir -p /var/www; \
+    cd /var/www; \
     git clone https://github.com/stasundr/mtstone.git; \
     cd mtstone; \
     npm install
