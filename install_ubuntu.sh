@@ -4,7 +4,6 @@
 # Для установки нужно просто запустить этот скрипт (он сам склонирует репозиторий с гитхаба)
 # Для запуска нужно проверить конфиг (mtstone.js -> config) и запустить forever mtstone.js
 
-# 1) Run redis-server as a daemon
 # 2) Make initial configuration (rscript -> Rscript; ts -> tsp; host -> ask for host adds)
 
 SOFTWARE='/usr/bin'
@@ -51,4 +50,5 @@ apt-get install -y wget unzip git nano task-spooler r-base
     git clone https://github.com/stasundr/mtstone.git; \
     cd mtstone; \
     npm install; \
-    chmod 777 /var/www/mtstone/uploads
+    mkdir -p /var/www/mtstone/uploads; \
+    chmod 777 /var/www/mtstone/uploads/
